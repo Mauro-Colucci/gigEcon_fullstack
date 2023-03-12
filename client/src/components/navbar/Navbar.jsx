@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 
 const Navbar = () => {
   const [active, setActive] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const { pathname } = useLocation();
 
   const isActive = () => {
     window.scrollY > 0 ? setActive(true) : setActive(false);
@@ -21,50 +24,65 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={active ? "navbar active" : "navbar"}>
+    <nav className={active || pathname !== "/" ? "navbar active" : "navbar"}>
       <div className="container">
         <div className="logo">
-          <span>fiverr</span>
-          <span className="dot">.</span>
+          <Link to="/">
+            <span>ramone</span>
+            <span className="dot">.</span>
+          </Link>
         </div>
         <div className="links">
-          <span>Fiverr Business</span>
+          <span>Business</span>
           <span>Explore</span>
-          <span>English</span>
-          <span>Sign in</span>
+          {/* <span>English</span> */}
           {!currentUser?.isSeller && <span>Become a Seller</span>}
-          {!currentUser && <button>Join</button>}
-          {currentUser && (
-            <div className="user" onClick={() => setOpen(!open)}>
+          {currentUser ? (
+            <div className="user">
               <img
                 src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
                 alt="User Portrait."
               />
-              <span>{currentUser?.username}</span>
+              <span onClick={() => setOpen(!open)}>
+                {currentUser?.username}
+              </span>
               {open && (
                 <div className="options">
                   {currentUser?.isSeller && (
                     <>
-                      <span>Gigs</span>
-                      <span>Add New Gig</span>
+                      <Link to="/mygigs">Gigs</Link>
+                      <Link to="/add">Add New Gig</Link>
                     </>
                   )}
-                  <span>Orders</span>
-                  <span>Messages</span>
-                  <span>Logout</span>
+                  <Link to="/orders">Orders</Link>
+                  <Link to="/messages">Messages</Link>
+                  <Link to="/">Logout</Link>
                 </div>
               )}
             </div>
+          ) : (
+            <>
+              <span>Sign in</span>
+              <Link className="link" to="/register">
+                <button>Join</button>
+              </Link>
+            </>
           )}
         </div>
       </div>
-      {active && (
+      {(active || pathname !== "/") && (
         <>
           <hr />
           <div className="menu">
-            <span>tesxt</span>
-            <span>tesxt</span>
-            <span>tesxt</span>
+            <Link to="/">Graphics & Design</Link>
+            <Link to="/">Video & Animation</Link>
+            <Link to="/">Writing & Translation</Link>
+            <Link to="/">AI Services</Link>
+            <Link to="/">Digital Marketing</Link>
+            <Link to="/">Music & Audio</Link>
+            <Link to="/">Programming & Tech</Link>
+            <Link to="/">Business</Link>
+            <Link to="/">Lifestyle</Link>
           </div>
         </>
       )}
