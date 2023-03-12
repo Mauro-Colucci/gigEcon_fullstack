@@ -136,7 +136,7 @@
             flex-wrap: wrap;
 
             .item {
-              width: 200px;
+              width: 300px;
               display: flex;
               flex-direction: column;
               gap: 10px;
@@ -274,6 +274,9 @@
       }
 
       .features {
+        /*  display: flex;
+        flex-direction: column;
+        gap: 10px; */
         .item {
           display: flex;
           align-items: center;

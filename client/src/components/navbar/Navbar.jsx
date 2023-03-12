@@ -19,7 +19,7 @@ const Navbar = () => {
 
   const currentUser = {
     id: 1,
-    username: "Jhonny Ramone",
+    username: "Johnny Ramone",
     isSeller: true,
   };
 
@@ -38,14 +38,12 @@ const Navbar = () => {
           {/* <span>English</span> */}
           {!currentUser?.isSeller && <span>Become a Seller</span>}
           {currentUser ? (
-            <div className="user">
+            <div className="user" onClick={() => setOpen(!open)}>
               <img
                 src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
                 alt="User Portrait."
               />
-              <span onClick={() => setOpen(!open)}>
-                {currentUser?.username}
-              </span>
+              <span>{currentUser?.username}</span>
               {open && (
                 <div className="options">
                   {currentUser?.isSeller && (
@@ -84,6 +82,7 @@ const Navbar = () => {
             <Link to="/">Business</Link>
             <Link to="/">Lifestyle</Link>
           </div>
+          <hr />
         </>
       )}
     </nav>
