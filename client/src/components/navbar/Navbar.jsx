@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import newRequest from "../../utils/newRequest";
 import "./Navbar.scss";
 
 const Navbar = () => {
@@ -7,6 +8,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const isActive = () => {
     window.scrollY > 0 ? setActive(true) : setActive(false);
@@ -17,10 +19,16 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", isActive);
   }, []);
 
-  const currentUser = {
-    id: 1,
-    username: "Johnny Ramone",
-    isSeller: true,
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+  const handleLogout = async () => {
+    try {
+      await newRequest.post("/auth/logout");
+      localStorage.setItem("currentUser", null);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -35,12 +43,12 @@ const Navbar = () => {
         <div className="links">
           <span>Business</span>
           <span>Explore</span>
-          {/* <span>English</span> */}
+          <span>English</span>
           {!currentUser?.isSeller && <span>Become a Seller</span>}
           {currentUser ? (
             <div className="user" onClick={() => setOpen(!open)}>
               <img
-                src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
+                src={currentUser.img || "/img/noavatar.jpg"}
                 alt="User Portrait."
               />
               <span>{currentUser?.username}</span>
@@ -54,13 +62,13 @@ const Navbar = () => {
                   )}
                   <Link to="/orders">Orders</Link>
                   <Link to="/messages">Messages</Link>
-                  <Link to="/">Logout</Link>
+                  <span onClick={handleLogout}>Logout</span>
                 </div>
               )}
             </div>
           ) : (
             <>
-              <span>Sign in</span>
+              <Link to="/login">Sign in</Link>
               <Link className="link" to="/register">
                 <button>Join</button>
               </Link>

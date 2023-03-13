@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import connectDB from "./config/connectDB.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import logger from "morgan";
 import userRoute from "./routes/user.js";
 import reviewRoute from "./routes/review.js";
 import orderRoute from "./routes/order.js";
@@ -24,6 +25,8 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(logger("dev"));
 
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
