@@ -1,14 +1,20 @@
 import express from "express";
 import { config } from "dotenv";
-import mongoose from "mongoose";
 import connectDB from "./config/connectDB.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import userRoute from "./routes/user.js";
+import reviewRoute from "./routes/review.js";
+import orderRoute from "./routes/order.js";
+import messageRoute from "./routes/message.js";
+import gigRoute from "./routes/gig.js";
+import conversationRoute from "./routes/conversation.js";
+import authRoute from "./routes/auth.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 config({ path: "./config/.env" });
 const PORT = process.env.PORT || 3000;
 const app = express();
-connectDB();
 
 app.use(
   cors({
@@ -19,15 +25,17 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-//error handler middleware
-app.use((err, req, res, next) => {
-  const errorStatus = err.status || 500;
-  const errorMessage = err.message || "Something went wrong!";
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/reviews", reviewRoute);
+app.use("/api/orders", orderRoute);
+app.use("/api/messages", messageRoute);
+app.use("/api/gigs", gigRoute);
+app.use("/api/conversations", conversationRoute);
 
-  return res.status(errorStatus).send(errorMessage);
-});
+app.use(errorHandler);
 
-mongoose.connection.once("open", () => {
-  console.log("Connected to MongoDB");
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  connectDB();
+  console.log(`Server running on port ${PORT}`);
 });
