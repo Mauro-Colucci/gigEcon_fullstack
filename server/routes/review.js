@@ -1,8 +1,15 @@
 import { Router } from "express";
-import { fn } from "../controllers/review.js";
+import verifyToken from "../middleware/verifyToken.js";
+import {
+  createReview,
+  deleteReview,
+  getReviews,
+} from "../controllers/review.js";
 
 const router = Router();
 
-router.get("/test", fn);
+router.post("/", verifyToken, createReview);
+router.delete("/:id", verifyToken, deleteReview);
+router.get("/:id", getReviews);
 
 export default router;
