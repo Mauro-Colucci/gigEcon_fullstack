@@ -1,8 +1,20 @@
 import { Router } from "express";
-import { fn } from "../controllers/conversation.js";
+import verifyToken from "../middleware/verifyToken.js";
+
+import {
+  getConversations,
+  createConversation,
+  getSingleConversation,
+  updateConversation,
+} from "../controllers/conversation.js";
 
 const router = Router();
 
-router.get("/test", fn);
+router.use(verifyToken);
+
+router.get("/", getConversations);
+router.post("/", createConversation);
+router.get("/:id", getSingleConversation);
+router.patch("/:id", updateConversation);
 
 export default router;

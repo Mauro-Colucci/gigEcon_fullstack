@@ -2,9 +2,11 @@ import Review from "../review/Review";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import "./Reviews.scss";
+import { useState } from "react";
 
 const Reviews = ({ gigId }) => {
   const queryClient = useQueryClient();
+  const [errMsg, setErrMsg] = useState(null);
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["reviews"],
@@ -21,6 +23,7 @@ const Reviews = ({ gigId }) => {
     onSuccess: () => {
       queryClient.invalidateQueries(["reviews"]);
     },
+    onError: (err) => setErrMsg(err.response?.data),
   });
 
   const handleSubmit = async (e) => {
@@ -50,6 +53,7 @@ const Reviews = ({ gigId }) => {
             <option value={5}>5</option>
           </select>
           <button>Send</button>
+          {errMsg && <span className="err">{errMsg}</span>}
         </form>
       </div>
     </div>

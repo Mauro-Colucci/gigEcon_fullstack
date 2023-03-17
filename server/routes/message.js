@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { fn } from "../controllers/message.js";
+import { createMessage, getMessages } from "../controllers/message.js";
+import verifyToken from "../middleware/verifyToken.js";
 
 const router = Router();
 
-router.get("/test", fn);
+router.use(verifyToken);
+
+router.post("/", createMessage);
+router.get("/:id", getMessages);
 
 export default router;

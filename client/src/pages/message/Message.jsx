@@ -1,200 +1,73 @@
-import { Link } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useParams } from "react-router-dom";
+import newRequest from "../../utils/newRequest";
 import "./Message.scss";
 
 const Message = () => {
+  const { id } = useParams();
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+  const queryClient = useQueryClient();
+
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["messages"],
+    queryFn: () =>
+      newRequest.get(`/messages/${id}`).then((res) => {
+        return res.data;
+      }),
+  });
+
+  const mutation = useMutation({
+    mutationFn: (message) => {
+      return newRequest.post("/messages", message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["messages"]);
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutation.mutate({
+      conversationId: id,
+      desc: e.target[0].value,
+    });
+    e.target[0].value = "";
+  };
+
   return (
     <div className="message">
       <div className="container">
         <span className="breadcrumbs">
           <Link to="/messages">Messages</Link> &gt; Marky Ramone &gt;
         </span>
-        <div className="messages">
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
+        {isLoading ? (
+          "Loading..."
+        ) : error ? (
+          "Oh oh..."
+        ) : (
+          <div className="messages">
+            {data.map((message) => (
+              <div
+                key={message._id}
+                className={
+                  message.userId === currentUser._id ? "owner item" : "item"
+                }
+              >
+                <img
+                  src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
+                  alt=""
+                />
+                <p>{message.desc}</p>
+              </div>
+            ))}
           </div>
-          <div className="item owner">
-            <img
-              src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item owner">
-            <img
-              src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item owner">
-            <img
-              src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item owner">
-            <img
-              src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item owner">
-            <img
-              src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item owner">
-            <img
-              src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item owner">
-            <img
-              src="https://loff.it/wp-content/uploads/2015/10/loffit-johnny-ramone-un-bronco-icono-del-punk-02-600x450-1538943544.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-          <div className="item">
-            <img
-              src="https://musicasdelmundo.com.ar/wp-content/uploads/2021/12/unnamed-69.jpg"
-              alt=""
-            />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos iure
-              mollitia perspiciatis officiis voluptate? Sequi quae officia
-              possimus, iusto labore alias mollitia eveniet nemo placeat
-              laboriosam nisi animi! Error, tenetur!
-            </p>
-          </div>
-        </div>
+        )}
         <hr />
-        <div className="write">
+        <form className="write" onSubmit={handleSubmit}>
           <textarea type="text" placeholder="Write a message" />
           <button>Send</button>
-        </div>
+        </form>
       </div>
     </div>
   );

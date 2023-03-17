@@ -1,10 +1,37 @@
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import newRequest from "../../utils/newRequest";
 import "./Orders.scss";
 
 const Orders = () => {
-  const currentUser = {
-    id: 1,
-    username: "Johnny Ramone",
-    isSeller: true,
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+  const navigate = useNavigate();
+
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["orders"],
+    queryFn: () =>
+      newRequest.get("/orders").then((res) => {
+        return res.data;
+      }),
+  });
+
+  const handleContact = async (order) => {
+    const sellerId = order.sellerId;
+    const buyerId = order.buyerId;
+    const id = sellerId + buyerId;
+
+    try {
+      const res = await newRequest.get(`/conversations/${id}`);
+      navigate(`/message/${res.data.id}`);
+    } catch (err) {
+      if (err.response.status === 404) {
+        const res = await newRequest.post("/conversations/", {
+          to: currentUser.isSeller ? buyerId : sellerId,
+        });
+        navigate(`/message/${res.data.id}`);
+      }
+    }
   };
 
   return (
@@ -13,121 +40,45 @@ const Orders = () => {
         <div className="title">
           <h1>Orders</h1>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Title</th>
-              <th>Price</th>
-              {<th>{currentUser.isSeller ? "Buyer" : "Seller"}</th>}
-              <th>Contact</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <img
-                  className="image"
-                  src="https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                  alt=""
-                />
-              </td>
-              <td>Stunning concept art</td>
-              <td>
-                59<sup>99</sup>
-              </td>
-              <td>Joey Ramone</td>
-              <td>
-                <img className="message" src="./img/message.png" alt="" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <img
-                  className="image"
-                  src="https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                  alt=""
-                />
-              </td>
-              <td>Ai generated concept art</td>
-              <td>
-                120<sup>99</sup>
-              </td>
-              <td>Johnny Ramone</td>
-              <td>
-                <img className="message" src="./img/message.png" alt="" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <img
-                  className="image"
-                  src="https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                  alt=""
-                />
-              </td>
-              <td>High quality digital character</td>
-              <td>
-                79<sup>99</sup>
-              </td>
-              <td>Marky Ramone</td>
-              <td>
-                <img className="message" src="./img/message.png" alt="" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <img
-                  className="image"
-                  src="https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                  alt=""
-                />
-              </td>
-              <td>Illustration hyper realistic painting</td>
-              <td>
-                119<sup>99</sup>
-              </td>
-              <td>C.J. Ramone</td>
-              <td>
-                <img className="message" src="./img/message.png" alt="" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <img
-                  className="image"
-                  src="https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                  alt=""
-                />
-              </td>
-              <td>Original ai generated digital art</td>
-              <td>
-                59<sup>99</sup>
-              </td>
-              <td>Tommy Ramone</td>
-              <td>
-                <img className="message" src="./img/message.png" alt="" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <img
-                  className="image"
-                  src="https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                  alt=""
-                />
-              </td>
-              <td>Text based ai generated art</td>
-              <td>
-                110<sup>99</sup>
-              </td>
-              <td>Dee Dee Ramone</td>
-              <td>
-                <img className="message" src="./img/message.png" alt="" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        {isLoading ? (
+          "Loading..."
+        ) : error ? (
+          "Something went horribly wrong..."
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Price</th>
+                {<th>{currentUser.isSeller ? "Buyer" : "Seller"}</th>}
+                <th>Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((order) => (
+                <tr key={order._id}>
+                  <td>
+                    <img className="image" src={order.img} alt="" />
+                  </td>
+                  <td>{order.title}</td>
+                  <td>$ {order.price}</td>
+                  <td>
+                    {currentUser.isSeller ? order.buyerId : order.sellerId}
+                  </td>
+                  <td>
+                    <img
+                      className="message"
+                      src="./img/message.png"
+                      alt=""
+                      onClick={() => handleContact(order)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

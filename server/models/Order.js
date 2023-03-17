@@ -6,9 +6,9 @@ const OrderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    image: {
+    img: {
       type: String,
-      required: tue,
+      required: true,
     },
     title: {
       type: String,
