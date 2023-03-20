@@ -11,6 +11,8 @@ import Add from "./pages/add/Add";
 import Gig from "./pages/gig/Gig";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
+import Payment from "./pages/payment/payment";
+import Success from "./pages/success/success";
 
 function App() {
   const Layout = () => {
@@ -59,6 +61,14 @@ function App() {
         {
           path: "/gig/:id",
           element: <Gig />,
+        },
+        {
+          path: "/payment/:id",
+          element: <Payment />,
+        },
+        {
+          path: "/success",
+          element: <Success />,
         },
       ],
     },

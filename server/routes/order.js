@@ -1,12 +1,13 @@
 import { Router } from "express";
-import { createOrder, getOrders } from "../controllers/order.js";
+import { getOrders, intent, confirm } from "../controllers/order.js";
 import verifyToken from "../middleware/verifyToken.js";
 
 const router = Router();
 
 router.use(verifyToken);
 
-router.post("/:gigId", createOrder);
 router.get("/", getOrders);
+router.post("/create-payment-intent/:id", intent);
+router.patch("/", confirm);
 
 export default router;
